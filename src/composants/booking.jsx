@@ -188,20 +188,32 @@ export default function DidiConcertBooking() {
       name: "Grand Public",
       color: "from-blue-500 to-blue-700",
       icon: <Ticket className="w-6 h-6" />,
-      features: ["Accès à la salle", "Places debout", "Ambiance générale"],
+      subtitle: "Votre passeport pour une soirée inoubliable !",
+      features: [
+        "Accès à la salle",
+        "Ambiance générale",
+        "Accès aux zones de restauration et bars",
+        "Souvenirs garantis et émotions partagées",
+      ],
+      description:
+        "Parfait pour : Les fans qui veulent vivre le concert au plus près de l'énergie du public !",
     },
     vip: {
       price: 10000,
       name: "VIP",
       color: "from-amber-500 to-amber-700",
       icon: <Crown className="w-6 h-6" />,
+      subtitle: "L'expérience ultime pour les vrais passionnés",
       features: [
-        "Premières rangées",
-        "Meet & Greet avec l'artiste",
-        "Pack boissons premium",
+        "Accès prioritaire",
+        "Placement VIP privilégié",
+        "Rencontre avec les artistes - Session photo et dédicaces (sous réserve de la disponibilité de l'artiste)",
         "Merchandise exclusif",
-        "Photo souvenir",
+        "Espace VIP privatif",
+        "Service hôtelier dédié tout au long de l'événement",
       ],
+      description:
+        "L'excellence pour : Ceux qui veulent transformer un concert en moment exceptionnel !",
     },
   };
 
@@ -552,8 +564,67 @@ export default function DidiConcertBooking() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-pink-500 to-purple-500 mb-4 animate-[slideDown_0.8s_ease-out]">
-              DIDI B LIVE
+              DIDI B MOSCOW 2025
             </h1>
+
+            {/* Section Russia - Africa */}
+            <div className="mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                RUSSIA - AFRICA 2e Édition
+              </h2>
+
+              {/* Section Organisateurs */}
+              <div className="flex flex-col items-center justify-center gap-6 mt-8">
+                <h3 className="text-xl font-semibold text-white/80">
+                  Organisé par
+                </h3>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-8 bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                  {/* Logo XXX Louange Bar */}
+                  <div className="flex items-center gap-4">
+                    <div className="bg-white rounded-xl p-3 shadow-lg">
+                      <img
+                        src="assets/images/xxx-louange.jpeg"
+                        alt="XXX Louange Bar"
+                        className="h-12 w-auto object-contain"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
+                      />
+                      <div className="hidden items-center justify-center h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white font-bold text-xs text-center">
+                        XXX
+                      </div>
+                    </div>
+                    <span className="text-white text-lg font-semibold">
+                      XXX Louange Bar
+                    </span>
+                  </div>
+
+                  <div className="text-white text-2xl font-light">&</div>
+
+                  {/* Logo Kora Event */}
+                  <div className="flex items-center gap-4">
+                    <div className="bg-white rounded-xl p-3 shadow-lg">
+                      <img
+                        src="assets/images/kora-event.jpeg"
+                        alt="Kora Event"
+                        className="h-12 w-auto object-contain"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
+                      />
+                      <div className="hidden items-center justify-center h-12 w-12 bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg text-white font-bold text-xs text-center">
+                        KORA
+                      </div>
+                    </div>
+                    <span className="text-white text-lg font-semibold">
+                      Kora Event
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Compteur à rebours principal */}
             {isPromoActive && (
@@ -610,7 +681,7 @@ export default function DidiConcertBooking() {
             <div className="flex flex-wrap justify-center gap-6 text-white text-lg mb-4">
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
                 <MapPin className="w-5 h-5 text-pink-300" />
-                <span>Moscou Arena, Russie</span>
+                <span>Espace Pravda, Варшавское шоссе 26 стр 12</span>
               </div>
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
                 <Calendar className="w-5 h-5 text-amber-300" />
@@ -619,17 +690,9 @@ export default function DidiConcertBooking() {
             </div>
 
             <p className="text-xl text-white font-light max-w-2xl mx-auto text-shadow">
-              L'icône du rap ivoirien en concert exclusif à Moscou ! Une soirée
+              L'icône du rap africain en concert exclusif à Moscou ! Une soirée
               inoubliable avec le roi du rap ivoire.
             </p>
-
-            {/* Indication musique */}
-            <div className="mt-6 flex justify-center items-center gap-2 text-amber-300 text-sm">
-              <Music className="w-4 h-4" />
-              <span>
-                Musique de Didi B en fond - Cliquez pour activer le son
-              </span>
-            </div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -672,7 +735,12 @@ export default function DidiConcertBooking() {
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
                         {ticket.icon}
-                        <h3 className="text-2xl font-bold">{ticket.name}</h3>
+                        <div>
+                          <h3 className="text-2xl font-bold">{ticket.name}</h3>
+                          <p className="text-sm text-white/80 mt-1">
+                            {ticket.subtitle}
+                          </p>
+                        </div>
                       </div>
                       <div className="text-right">
                         {key === "standard" && isPromoActive ? (
@@ -698,7 +766,7 @@ export default function DidiConcertBooking() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 mb-4">
                       {ticket.features.map((feature, index) => (
                         <div
                           key={index}
@@ -708,6 +776,13 @@ export default function DidiConcertBooking() {
                           <span className="opacity-95">{feature}</span>
                         </div>
                       ))}
+                    </div>
+
+                    {/* Description du ticket */}
+                    <div className="bg-white/10 rounded-xl p-3 mt-3">
+                      <p className="text-sm text-white/90 italic">
+                        {ticket.description}
+                      </p>
                     </div>
 
                     {formData.ticketType === key && (
@@ -750,8 +825,11 @@ export default function DidiConcertBooking() {
                 </h3>
                 <ul className="space-y-2 text-sm opacity-95">
                   <li>• Ouverture des portes : 18:00</li>
+                  <li>• Installation des invités : 18h - 19h30</li>
+                  <li>
+                    • Lieu : Moscou, Espace Pravda, Варшавское шоссе 26 стр 12
+                  </li>
                   <li>• Début du concert : 20:00</li>
-                  <li>• Age minimum : 16 ans</li>
                   <li>• Pièce d'identité requise</li>
                   <li>• Réservation nominative</li>
                   {isPromoActive && (
@@ -1036,55 +1114,8 @@ export default function DidiConcertBooking() {
             </div>
           </div>
 
-          {/* Footer avec logos des organisateurs */}
+          {/* Footer */}
           <div className="mt-16 text-center animate-[fadeIn_1s_ease-in]">
-            {/* Section Organisateurs */}
-            <div className="mb-12">
-              <h3 className="text-2xl font-bold text-white mb-8">
-                Organisé par
-              </h3>
-              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 max-w-4xl mx-auto">
-                {/* Logo Organisateur 1 */}
-                <div className="flex flex-col items-center group">
-                  <div className="bg-white rounded-2xl p-4 shadow-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-2xl border-2 border-amber-400/30">
-                    <img
-                      src="/assets/images/xxx-louange.jpeg"
-                      alt="Logo Organisateur 1"
-                      className="h-16 w-auto object-contain filter   transition-all duration-300 "
-                      onError={(e) => {
-                        e.target.src =
-                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='60' viewBox='0 0 100 60'%3E%3Crect width='100' height='60' fill='%23f59e0b' rx='8'/%3E%3Ctext x='50' y='35' font-family='Arial' font-size='14' fill='white' text-anchor='middle'%3ELogo 1%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                  </div>
-                  <p className="text-white text-sm mt-3 font-semibold opacity-90 group-hover:opacity-100 transition-opacity">
-                    XXX Louange Bar
-                  </p>
-                </div>
-
-                {/* Séparateur */}
-                <div className="hidden md:block w-px h-20 bg-gradient-to-b from-transparent via-white/40 to-transparent"></div>
-
-                {/* Logo Organisateur 2 */}
-                <div className="flex flex-col items-center group">
-                  <div className="bg-white rounded-2xl p-4 shadow-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-2xl border-2 border-purple-400/30">
-                    <img
-                      src="/assets/images/kora-event.jpeg"
-                      alt="Logo Organisateur 2"
-                      className="h-16 w-auto object-contain filter transition-all duration-300"
-                      onError={(e) => {
-                        e.target.src =
-                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='60' viewBox='0 0 100 60'%3E%3Crect width='100' height='60' fill='%238b5cf6' rx='8'/%3E%3Ctext x='50' y='35' font-family='Arial' font-size='14' fill='white' text-anchor='middle'%3ELogo 2%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                  </div>
-                  <p className="text-white text-sm mt-3 font-semibold opacity-90 group-hover:opacity-100 transition-opacity">
-                    Kora Event
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {/* Section Événement */}
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 border border-white/30 text-white max-w-4xl mx-auto">
               <h3 className="text-2xl font-bold mb-4">
@@ -1116,19 +1147,18 @@ export default function DidiConcertBooking() {
               <div className="flex flex-wrap justify-center items-center gap-6 mb-4">
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-amber-400" />
-                  <span>+7 (999) 123-45-67</span>
+                  <span>+7 (968) 438-74-10</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-purple-400" />
-                  <span>info@didib-moscow.com</span>
+                  <span>didibrussia@mail.ru</span>
                 </div>
               </div>
               <p className="mt-2">
                 © 2025 Didi B Concert Moscow • Tous droits réservés
               </p>
               <p className="text-xs text-gray-400 mt-2">
-                En partenariat avec les meilleurs organisateurs d'événements de
-                Moscou
+                En partenariat avec XXX Louange Bar & Kora Event
               </p>
             </div>
           </div>
