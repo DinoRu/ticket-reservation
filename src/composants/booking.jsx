@@ -56,7 +56,7 @@ export default function DidiConcertBooking() {
 
   // URLs des musiques de Didi B
   const didiBSongs = [
-    "assets/audio/didi_dx3.mp3",
+    "assets/audio/didi-b_dx3.mp3",
     "assets/audio/didi_game_djai.mp3",
   ];
 
@@ -107,7 +107,6 @@ export default function DidiConcertBooking() {
     const audio = new Audio(didiBSongs[0]);
     audio.loop = true;
     audio.volume = volume;
-    audio.currentTime = 13;
     audioElementRef.current = audio;
 
     const handleFirstInteraction = () => {
