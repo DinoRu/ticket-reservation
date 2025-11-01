@@ -107,6 +107,7 @@ export default function DidiConcertBooking() {
     const audio = new Audio(didiBSongs[0]);
     audio.loop = true;
     audio.volume = volume;
+    audio.currentTime = 12;
     audioElementRef.current = audio;
 
     const handleFirstInteraction = () => {
