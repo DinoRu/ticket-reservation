@@ -33,14 +33,13 @@ export default function DidiConcertBooking() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.3);
   const [timeLeft, setTimeLeft] = useState({});
-  const [isPromoActive, setIsPromoActive] = useState(true);
+  const [promoStatus, setPromoStatus] = useState("upcoming"); // 'upcoming', 'active', 'ended'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitProgress, setSubmitProgress] = useState(0);
 
-  // Dates pour la promotion
-  const promoStartDate = new Date();
-  const promoEndDate = new Date();
-  promoEndDate.setDate(promoEndDate.getDate() + 7);
+  // Dates pour la promotion (heure de Moscou)
+  const promoStartDate = new Date("2025-11-02T16:00:00+03:00"); // 02/11/2025 à 16h heure Moscou
+  const promoEndDate = new Date("2025-11-07T23:59:59+03:00"); // 07/11/2025 à minuit heure Moscou
   const normalPrice = 5000;
   const promoPrice = 3500;
 
@@ -70,18 +69,30 @@ export default function DidiConcertBooking() {
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
-      const difference = promoEndDate - now;
+      const timeUntilStart = promoStartDate - now;
+      const timeUntilEnd = promoEndDate - now;
 
-      if (difference > 0) {
-        setIsPromoActive(true);
+      if (timeUntilStart > 0) {
+        // Promotion pas encore commencée
+        setPromoStatus("upcoming");
         return {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
+          days: Math.floor(timeUntilStart / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((timeUntilStart / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((timeUntilStart / 1000 / 60) % 60),
+          seconds: Math.floor((timeUntilStart / 1000) % 60),
+        };
+      } else if (timeUntilEnd > 0) {
+        // Promotion en cours
+        setPromoStatus("active");
+        return {
+          days: Math.floor(timeUntilEnd / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((timeUntilEnd / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((timeUntilEnd / 1000 / 60) % 60),
+          seconds: Math.floor((timeUntilEnd / 1000) % 60),
         };
       } else {
-        setIsPromoActive(false);
+        // Promotion terminée
+        setPromoStatus("ended");
         return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
     };
@@ -183,7 +194,7 @@ export default function DidiConcertBooking() {
 
   const ticketTypes = {
     standard: {
-      price: isPromoActive ? promoPrice : normalPrice,
+      price: promoStatus === "active" ? promoPrice : normalPrice,
       originalPrice: normalPrice,
       name: "Grand Public",
       color: "from-blue-500 to-blue-700",
@@ -396,6 +407,19 @@ export default function DidiConcertBooking() {
           {Math.round(progress)}%
         </div>
       </div>
+    );
+  };
+
+  // Fonction pour formater la date de début de promo
+  const formatPromoStartDate = () => {
+    return (
+      promoStartDate.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }) + " (heure de Moscou)"
     );
   };
 
@@ -627,24 +651,35 @@ export default function DidiConcertBooking() {
             </div>
 
             {/* Compteur à rebours principal */}
-            {isPromoActive && (
+            {(promoStatus === "upcoming" || promoStatus === "active") && (
               <div className="mb-6 animate-[fadeIn_0.8s_ease-in]">
                 <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white py-4 px-6 rounded-2xl shadow-2xl border-2 border-yellow-400 max-w-2xl mx-auto">
                   <div className="flex items-center justify-center gap-3 mb-3">
                     <Zap className="w-6 h-6 text-yellow-300 animate-pulse" />
                     <span className="text-xl font-bold">
-                      PROMOTION SPÉCIALE !
+                      {promoStatus === "upcoming"
+                        ? "PROMOTION À VENIR !"
+                        : "PROMOTION SPÉCIALE !"}
                     </span>
                     <Zap className="w-6 h-6 text-yellow-300 animate-pulse" />
                   </div>
+
                   <p className="text-lg mb-3">
-                    <strong>3 500 ₽</strong> au lieu de <s>5 000 ₽</s> -
-                    Première semaine seulement !
+                    <strong>3 500 ₽</strong> au lieu de <s>5 000 ₽</s>
+                    {promoStatus === "upcoming" && (
+                      <span> - Du 02/11 au 07/11/2025</span>
+                    )}
                   </p>
+
                   <div className="flex items-center justify-center gap-2 text-sm mb-2">
                     <Clock className="w-4 h-4 text-yellow-300" />
-                    <span>Offre se termine dans :</span>
+                    <span>
+                      {promoStatus === "upcoming"
+                        ? "Promotion commence dans :"
+                        : "Offre se termine dans :"}
+                    </span>
                   </div>
+
                   <div className="flex justify-center gap-4 text-2xl font-mono font-bold">
                     <div className="text-center">
                       <div className="bg-black/30 rounded-lg px-3 py-2 min-w-[60px]">
@@ -674,6 +709,12 @@ export default function DidiConcertBooking() {
                       <div className="text-xs mt-1 text-yellow-200">SEC</div>
                     </div>
                   </div>
+
+                  {promoStatus === "upcoming" && (
+                    <p className="text-sm text-yellow-200 mt-3">
+                      ⏰ Début : {formatPromoStartDate()}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -725,10 +766,16 @@ export default function DidiConcertBooking() {
                   >
                     <div className="absolute inset-0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-                    {/* Badge PROMO pour le ticket standard */}
-                    {key === "standard" && isPromoActive && (
+                    {/* Badge pour le ticket standard selon le statut de la promo */}
+                    {key === "standard" && promoStatus === "active" && (
                       <div className="absolute -top-3 -left-3 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg animate-pulse z-10">
                         ⚡ PROMO
+                      </div>
+                    )}
+
+                    {key === "standard" && promoStatus === "upcoming" && (
+                      <div className="absolute -top-3 -left-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg animate-pulse z-10">
+                        🕒 PROMO À VENIR
                       </div>
                     )}
 
@@ -743,17 +790,33 @@ export default function DidiConcertBooking() {
                         </div>
                       </div>
                       <div className="text-right">
-                        {key === "standard" && isPromoActive ? (
+                        {key === "standard" ? (
                           <>
-                            <div className="text-3xl font-extrabold text-yellow-300">
+                            <div
+                              className={`text-3xl font-extrabold ${
+                                promoStatus === "active"
+                                  ? "text-yellow-300"
+                                  : "text-white"
+                              }`}
+                            >
                               {ticket.price.toLocaleString()} &#8381;
                             </div>
-                            <div className="text-sm opacity-90 line-through text-red-200">
-                              {ticket.originalPrice.toLocaleString()} &#8381;
-                            </div>
-                            <div className="text-xs text-green-300 font-bold mt-1">
-                              Économisez 1 500 ₽ !
-                            </div>
+                            {promoStatus === "active" && (
+                              <>
+                                <div className="text-sm opacity-90 line-through text-red-200">
+                                  {ticket.originalPrice.toLocaleString()}{" "}
+                                  &#8381;
+                                </div>
+                                <div className="text-xs text-green-300 font-bold mt-1">
+                                  Économisez 1 500 ₽ !
+                                </div>
+                              </>
+                            )}
+                            {promoStatus === "upcoming" && (
+                              <div className="text-xs text-blue-300 font-bold mt-1">
+                                Prix promo: 3 500 ₽ bientôt !
+                              </div>
+                            )}
                           </>
                         ) : (
                           <>
@@ -799,21 +862,27 @@ export default function DidiConcertBooking() {
                   </div>
 
                   {/* Compteur à rebours pour le ticket standard */}
-                  {key === "standard" && isPromoActive && (
-                    <div className="mt-3 bg-gradient-to-r from-red-500/20 to-pink-600/20 backdrop-blur-sm rounded-xl p-3 border border-red-400/30">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-red-200">
-                          <Clock className="w-4 h-4" />
-                          <span>Fin de la promotion:</span>
-                        </div>
-                        <div className="font-mono text-red-200 font-bold">
-                          {String(timeLeft.days).padStart(2, "0")}j{" "}
-                          {String(timeLeft.hours).padStart(2, "0")}h{" "}
-                          {String(timeLeft.minutes).padStart(2, "0")}m
+                  {key === "standard" &&
+                    (promoStatus === "upcoming" ||
+                      promoStatus === "active") && (
+                      <div className="mt-3 bg-gradient-to-r from-red-500/20 to-pink-600/20 backdrop-blur-sm rounded-xl p-3 border border-red-400/30">
+                        <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2 text-red-200">
+                            <Clock className="w-4 h-4" />
+                            <span>
+                              {promoStatus === "upcoming"
+                                ? "Promotion commence dans:"
+                                : "Fin de la promotion:"}
+                            </span>
+                          </div>
+                          <div className="font-mono text-red-200 font-bold">
+                            {String(timeLeft.days).padStart(2, "0")}j{" "}
+                            {String(timeLeft.hours).padStart(2, "0")}h{" "}
+                            {String(timeLeft.minutes).padStart(2, "0")}m
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               ))}
 
@@ -832,10 +901,15 @@ export default function DidiConcertBooking() {
                   <li>• Début du concert : 20:00</li>
                   <li>• Pièce d'identité requise</li>
                   <li>• Réservation nominative</li>
-                  {isPromoActive && (
+                  {promoStatus === "active" && (
                     <li className="text-yellow-300 font-semibold">
-                      • ⚡ Promotion spéciale : 3 500 ₽ au lieu de 5 000 ₽ cette
-                      semaine seulement !
+                      • ⚡ Promotion spéciale : 3 500 ₽ au lieu de 5 000 ₽
+                      jusqu'au 07/11 !
+                    </li>
+                  )}
+                  {promoStatus === "upcoming" && (
+                    <li className="text-blue-300 font-semibold">
+                      • 🕒 Promotion à venir : 3 500 ₽ du 02/11 au 07/11/2025 !
                     </li>
                   )}
                 </ul>
@@ -857,17 +931,32 @@ export default function DidiConcertBooking() {
                 </p>
 
                 {/* Bannière promotionnelle dans le formulaire */}
-                {isPromoActive && formData.ticketType === "standard" && (
-                  <div className="mb-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-xl text-center animate-pulse">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <Zap className="w-5 h-5 text-yellow-300" />
-                      <span className="font-bold">PROMOTION ACTIVE !</span>
+                {promoStatus === "active" &&
+                  formData.ticketType === "standard" && (
+                    <div className="mb-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-xl text-center animate-pulse">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Zap className="w-5 h-5 text-yellow-300" />
+                        <span className="font-bold">PROMOTION ACTIVE !</span>
+                      </div>
+                      <p className="text-sm">
+                        Vous économisez <strong>1 500 ₽</strong> par billet
+                      </p>
                     </div>
-                    <p className="text-sm">
-                      Vous économisez <strong>1 500 ₽</strong> par billet
-                    </p>
-                  </div>
-                )}
+                  )}
+
+                {promoStatus === "upcoming" &&
+                  formData.ticketType === "standard" && (
+                    <div className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-xl text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Clock className="w-5 h-5 text-yellow-300" />
+                        <span className="font-bold">PROMOTION À VENIR !</span>
+                      </div>
+                      <p className="text-sm">
+                        Prix promo: <strong>3 500 ₽</strong> à partir du
+                        02/11/2025
+                      </p>
+                    </div>
+                  )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Quantity Selector */}
@@ -1006,18 +1095,24 @@ export default function DidiConcertBooking() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Prix unitaire:</span>
                         <span className="text-purple-600 font-semibold">
-                          {formData.ticketType === "standard" &&
-                          isPromoActive ? (
-                            <>
-                              <span className="text-green-600">
+                          {formData.ticketType === "standard" ? (
+                            promoStatus === "active" ? (
+                              <>
+                                <span className="text-green-600">
+                                  {ticketTypes.standard.price.toLocaleString()}{" "}
+                                  &#8381;
+                                </span>
+                                <span className="text-sm text-gray-500 line-through ml-2">
+                                  {ticketTypes.standard.originalPrice.toLocaleString()}{" "}
+                                  &#8381;
+                                </span>
+                              </>
+                            ) : (
+                              <span>
                                 {ticketTypes.standard.price.toLocaleString()}{" "}
                                 &#8381;
                               </span>
-                              <span className="text-sm text-gray-500 line-through ml-2">
-                                {ticketTypes.standard.originalPrice.toLocaleString()}{" "}
-                                &#8381;
-                              </span>
-                            </>
+                            )
                           ) : (
                             <span>
                               {ticketTypes[
@@ -1028,22 +1123,23 @@ export default function DidiConcertBooking() {
                           )}
                         </span>
                       </div>
-                      {formData.ticketType === "standard" && isPromoActive && (
-                        <div className="flex justify-between items-center bg-green-50 rounded-lg p-2">
-                          <span className="text-green-700 text-sm">
-                            Économie totale:
-                          </span>
-                          <span className="text-green-700 font-bold text-sm">
-                            +
-                            {(
-                              (ticketTypes.standard.originalPrice -
-                                ticketTypes.standard.price) *
-                              formData.quantity
-                            ).toLocaleString()}{" "}
-                            &#8381;
-                          </span>
-                        </div>
-                      )}
+                      {formData.ticketType === "standard" &&
+                        promoStatus === "active" && (
+                          <div className="flex justify-between items-center bg-green-50 rounded-lg p-2">
+                            <span className="text-green-700 text-sm">
+                              Économie totale:
+                            </span>
+                            <span className="text-green-700 font-bold text-sm">
+                              +
+                              {(
+                                (ticketTypes.standard.originalPrice -
+                                  ticketTypes.standard.price) *
+                                formData.quantity
+                              ).toLocaleString()}{" "}
+                              &#8381;
+                            </span>
+                          </div>
+                        )}
                       <div className="border-t border-purple-200 pt-3">
                         <div className="flex justify-between items-center">
                           <span className="text-xl font-bold text-gray-800">
@@ -1091,7 +1187,7 @@ export default function DidiConcertBooking() {
                         </>
                       ) : (
                         <>
-                          {isPromoActive &&
+                          {promoStatus === "active" &&
                           formData.ticketType === "standard" ? (
                             <div className="flex items-center justify-center gap-2">
                               <Zap className="w-5 h-5 text-yellow-300" />
@@ -1135,8 +1231,10 @@ export default function DidiConcertBooking() {
                   🔥 Performance live épique
                 </div>
                 <div className="bg-white/20 px-4 py-2 rounded-full border border-white/30">
-                  {isPromoActive
-                    ? "💫 PROMO: 3 500 ₽ cette semaine!"
+                  {promoStatus === "active"
+                    ? "💫 PROMO: 3 500 ₽ jusqu'au 07/11!"
+                    : promoStatus === "upcoming"
+                    ? "💫 PROMO: 3 500 ₽ du 02/11 au 07/11!"
                     : "💫 Ambiance garantie"}
                 </div>
               </div>
