@@ -487,8 +487,8 @@ export default function DidiConcertBooking() {
           </div>
 
           <p className="text-sm text-gray-600">
-            L'organisateur vous contactera dans les 24h au{" "}
-            <strong>{formData.contact}</strong> pour finaliser votre
+            L'organisateur vous contactera dans les 24h par{" "}
+            <strong>+7 (999) 796-97-12</strong> pour finaliser votre
             réservation.
           </p>
         </div>
@@ -1035,7 +1035,7 @@ export default function DidiConcertBooking() {
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         <Phone className="w-4 h-4 inline mr-2" />
-                        Téléphone russe
+                        Téléphone russe (de préférence WhatsApp)
                       </label>
                       <input
                         type="tel"
