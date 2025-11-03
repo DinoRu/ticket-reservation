@@ -38,8 +38,8 @@ export default function DidiConcertBooking() {
   const [submitProgress, setSubmitProgress] = useState(0);
 
   // Dates pour la promotion (heure de Moscou)
-  const promoStartDate = new Date("2025-11-02T16:00:00+03:00"); // 02/11/2025 à 16h heure Moscou
-  const promoEndDate = new Date("2025-11-07T23:59:59+03:00"); // 07/11/2025 à minuit heure Moscou
+  const promoStartDate = new Date("2025-11-03T18:00:00+03:00"); // 02/11/2025 à 16h heure Moscou
+  const promoEndDate = new Date("2025-11-10T23:59:59+03:00"); // 07/11/2025 à minuit heure Moscou
   const normalPrice = 5000;
   const promoPrice = 3500;
 
@@ -48,9 +48,9 @@ export default function DidiConcertBooking() {
   const progressIntervalRef = useRef(null);
 
   const backgroundImages = [
-    'url("https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80")',
-    'url("https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80")',
-    'url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80")',
+    'url("/assets/images/photo-1.jpg")',
+    'url("/assets/images/photo-2.jpg")',
+    'url("/assets/images/photo-3.jpg")',
   ];
 
   // URLs des musiques de Didi B
