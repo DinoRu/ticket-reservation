@@ -898,7 +898,11 @@ export default function DidiConcertBooking() {
                   <li>
                     • Lieu : Moscou, Espace Pravda, Варшавское шоссе 26 стр 12
                   </li>
-                  <li>• Début du concert : 20:00</li>
+                  <li>• Début du concert : 22:00</li>
+                  <li>
+                    • Fermeture des portes: 23:00 (conformément aux exigences du
+                    contrat de l'artiste)
+                  </li>
                   <li>• Pièce d'identité requise</li>
                   <li>• Réservation nominative</li>
                   {promoStatus === "active" && (
