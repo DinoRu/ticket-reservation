@@ -726,7 +726,7 @@ export default function DidiConcertBooking() {
               </div>
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
                 <Calendar className="w-5 h-5 text-amber-300" />
-                <span>5 Décembre 2025 • 20:00</span>
+                <span>5 Décembre 2025 • 22:00</span>
               </div>
             </div>
 
