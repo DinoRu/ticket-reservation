@@ -1,12 +1,18 @@
-// If booking.jsx imports CSS directly, ensure you use the correct import for CSS files
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DidiConcertBooking from "./composants/booking";
-// If you need to import CSS, do it like this:
+import TicketSystem from "./composants/ticket_system";
 
 function App() {
   return (
-    <>
-      <DidiConcertBooking />
-    </>
+    <Router>
+      <Routes>
+        {/* Page principale */}
+        <Route path="/" element={<DidiConcertBooking />} />
+
+        {/* Page système */}
+        <Route path="/system" element={<TicketSystem />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -893,8 +893,6 @@ export default function DidiConcertBooking() {
                   Informations Importantes
                 </h3>
                 <ul className="space-y-2 text-sm opacity-95">
-                  <li>• Ouverture des portes : 18:00</li>
-                  <li>• Installation des invités : 18h - 19h30</li>
                   <li>
                     • Lieu : Moscou, Espace Pravda, Варшавское шоссе 26 стр 12
                   </li>
