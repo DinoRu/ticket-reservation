@@ -73,7 +73,7 @@ const AllTickets = () => {
     { value: "", label: "Toutes les catégories" },
     { value: "standard", label: "Standard" },
     { value: "vip", label: "VIP" },
-    { value: "vvip", label: "VVIP" },
+    // { value: "vvip", label: "VVIP" },
   ];
 
   const statuses = [
