@@ -5,40 +5,99 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // Créer une instance axios avec configuration par défaut
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: "http://localhost:5555/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Intercepteur pour ajouter le token JWT à chaque requête
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
+// 🔹 Ajout du token à chaque requête
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Intercepteur pour gérer les erreurs d'authentification
+// 🔹 Gestion refresh token automatique
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Si 401 mais pas le refresh lui-même
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) {
+        localStorage.clear();
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = "Bearer " + token;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      isRefreshing = true;
+
+      try {
+        const res = await axios.post("/api/auth/refresh", {
+          refreshToken,
+        });
+
+        const newToken = res.data?.data?.token;
+        const newRefresh = res.data?.data?.refreshToken;
+
+        localStorage.setItem("token", newToken);
+        if (newRefresh) localStorage.setItem("refreshToken", newRefresh);
+
+        api.defaults.headers.Authorization = `Bearer ${newToken}`;
+        processQueue(null, newToken);
+        isRefreshing = false;
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+      } catch (err) {
+        processQueue(err, null);
+        isRefreshing = false;
+
+        localStorage.clear();
+        window.location.href = "/login";
+        return Promise.reject(err);
+      }
     }
+
     return Promise.reject(error);
   }
 );
 
-// ==================== AUTH API ====================
+// Export APIs
 export const authAPI = {
   login: (credentials) => api.post("/auth/login", credentials),
   logout: () => api.post("/auth/logout"),

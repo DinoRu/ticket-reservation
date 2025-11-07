@@ -5,41 +5,66 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [refreshToken, setRefreshToken] = useState(
+    localStorage.getItem("refreshToken")
+  );
+  const [loading, setLoading] = useState(true);
 
-  // Vérifier si l'utilisateur est déjà connecté au chargement
+  // Initialisation au chargement
   useEffect(() => {
-    const initAuth = async () => {
-      const savedToken = localStorage.getItem("token");
-      const savedUser = localStorage.getItem("user");
+    const savedToken = localStorage.getItem("token");
+    const savedRefresh = localStorage.getItem("refreshToken");
+    const savedUser = localStorage.getItem("user");
 
-      if (savedToken && savedUser) {
-        try {
-          setToken(savedToken);
-          setUser(JSON.parse(savedUser));
-        } catch (error) {
-          console.error("Erreur initialisation auth:", error);
-          logout();
-        }
-      }
-      setLoading(false);
-    };
+    if (savedToken && savedRefresh && savedUser) {
+      setToken(savedToken);
+      setRefreshToken(savedRefresh);
+      setUser(JSON.parse(savedUser));
+    }
 
-    initAuth();
+    setLoading(false);
   }, []);
 
+  // Synchronisation automatique quand l’interceptor rafraîchit les tokens
+  useEffect(() => {
+    const syncAuth = () => {
+      const newToken = localStorage.getItem("token");
+      const newRefresh = localStorage.getItem("refreshToken");
+      const newUser = localStorage.getItem("user");
+
+      if (newToken && newUser) {
+        setToken(newToken);
+        setUser(JSON.parse(newUser));
+      }
+
+      if (newRefresh) {
+        setRefreshToken(newRefresh);
+      }
+    };
+
+    window.addEventListener("storage", syncAuth);
+    return () => window.removeEventListener("storage", syncAuth);
+  }, []);
+
+  // Connexion
   const login = async (username, password) => {
     try {
       const response = await authAPI.login({ username, password });
-      const { token: newToken, user: userData } = response.data.data;
+      const {
+        token: newToken,
+        refreshToken: newRefresh,
+        user: userData,
+      } = response.data.data;
 
-      // Sauvegarder dans localStorage
+      // Stockage
       localStorage.setItem("token", newToken);
+      localStorage.setItem("refreshToken", newRefresh);
       localStorage.setItem("user", JSON.stringify(userData));
 
-      // Mettre à jour l'état
+      // Mise à jour de l'état
       setToken(newToken);
+      setRefreshToken(newRefresh);
       setUser(userData);
 
       return { success: true };
@@ -52,35 +77,43 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Déconnexion
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
+
     setToken(null);
+    setRefreshToken(null);
     setUser(null);
   };
 
   const isAdmin = () => user?.role === "admin";
   const isVendor = () => user?.role === "vendeur";
 
-  const value = {
-    user,
-    token,
-    loading,
-    login,
-    logout,
-    isAdmin,
-    isVendor,
-    isAuthenticated: !!user,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        refreshToken,
+        loading,
+        login,
+        logout,
+        isAuthenticated: !!user,
+        isAdmin,
+        isVendor,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (!context)
     throw new Error("useAuth doit être utilisé dans un AuthProvider");
-  }
   return context;
 };
 
